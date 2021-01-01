@@ -1,11 +1,28 @@
 <template>
   <div id="app">
     <h1>拉勾教育</h1>
-    <router-view/>
+    <router-view />
+    <el-row>
+      <el-button>test</el-button>
+    </el-row>
   </div>
 </template>
 
+<script lang="ts">
+import Vue from 'vue'
+
+interface Foo {
+  a: string
+  b: number
+}
+
+export default Vue.extend({
+  name: 'App'
+})
+</script>
+
 <style lang="scss" scoped>
+// @import "~@/styles/variables.scss";
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
