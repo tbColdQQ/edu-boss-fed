@@ -25,7 +25,11 @@
           </el-form-item>
         </el-form>
       </div>
-      <el-table border v-loading="isLoading" :data="resources" style="width: 100%;margin-bottom: 20px">
+      <el-row>
+        <el-button type="primary">添加</el-button>
+        <el-button>资源分类</el-button>
+      </el-row>
+      <el-table border v-loading="isLoading" :data="resources" style="width: 100%;margin-bottom: 20px;margin-top: 20px;">
         <el-table-column type="index" label="编号" width="100"></el-table-column>
         <el-table-column prop="name" label="资源名称"></el-table-column>
         <el-table-column prop="url" label="资源路径"></el-table-column>
@@ -54,17 +58,24 @@
         :total="total">
       </el-pagination>
     </el-card>
+    <el-dialog title="收货地址" :visible.sync="dialogFormVisible">
+      <resource-create-or-edit :resource-id="resourceId" :is-edit="false" :categories="categories" />
+    </el-dialog>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
+import ResourceCreateOrEdit from './CreateOrEdit.vue'
 import { getResourcePages } from '@/services/resource'
 import { getResourceCategories } from '@/services/resource-category'
 import { Form } from 'element-ui'
 
 export default Vue.extend({
   name: 'ResourceList',
+  components: {
+    ResourceCreateOrEdit
+  },
   data () {
     return {
       resources: [],
@@ -77,7 +88,9 @@ export default Vue.extend({
         size: 5
       },
       total: 0,
-      isLoading: true
+      isLoading: true,
+      dialogFormVisible: false,
+      resourceId: null
     }
   },
   created () {
@@ -111,6 +124,8 @@ export default Vue.extend({
     },
     handleEdit (item: any) {
       console.log('handleEdit--->', item)
+      this.dialogFormVisible = true
+      this.resourceId = item.id
     },
     handleDelete (item: any) {
       console.log('handleDelete--->', item)
