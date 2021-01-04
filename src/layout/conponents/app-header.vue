@@ -7,12 +7,9 @@
       <el-breadcrumb-item>活动详情</el-breadcrumb-item>
     </el-breadcrumb>
     <el-dropdown>
-      <span class="el-dropdown-link">
-        <el-avatar :size="40" :src="userInfo.portrait" @error="errorHandler" shape="square">
-          <img src="../../assets/default-avatar.png"/>
-        </el-avatar>
-        <i class="el-icon-arrow-down el-icon--right"></i>
-      </span>
+      <el-avatar :size="30" :src="userInfo.portrait" @error="errorHandler" style="border-radius: 50%;text-align: center;">
+        <img src="../../assets/default-avatar.png"/>
+      </el-avatar>
       <el-dropdown-menu slot="dropdown">
         <el-dropdown-item>{{ userInfo.userName }}</el-dropdown-item>
         <el-dropdown-item divided @click.native="handleLogout">退出</el-dropdown-item>
@@ -74,6 +71,8 @@ export default Vue.extend({
   align-items: center;
   height: 100%;
   justify-content: space-between;
+  background: #f8f9fb;
+  padding: 0 20px;
 }
 .el-dropdown-link {
   display: flex;

@@ -5,7 +5,7 @@
         <el-input v-model="form.phone"></el-input>
       </el-form-item>
       <el-form-item label="密码" prop="password">
-        <el-input show-password v-model="form.password"></el-input>
+        <el-input show-password v-model="form.password" @keyup.enter.native="onSubmit"></el-input>
       </el-form-item>
       <el-form-item>
         <el-button :loading="loading" type="primary" class="login-btn" @click="onSubmit">登录</el-button>
@@ -23,8 +23,8 @@ export default Vue.extend({
   data () {
     return {
       form: {
-        phone: '18201288771',
-        password: '111'
+        phone: '15510792995',
+        password: '111111'
       },
       loading: false,
       rules: {

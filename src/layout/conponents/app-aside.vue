@@ -70,6 +70,8 @@ export default Vue.extend({
 <style lang="scss" scoped>
 .el-menu {
   min-height: 100vh;
+  background: #f8f9fb;
+  border-right: 0;
 }
 .el-submenu, .el-menu-item {
   text-align: left;

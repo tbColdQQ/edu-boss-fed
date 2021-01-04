@@ -37,6 +37,8 @@ export default Vue.extend({
 }
 .el-header {
   background: #b3c0d1;
+  padding: 0;
+  margin: 0;
 }
 .el-main {
   background: #e9eef3;
