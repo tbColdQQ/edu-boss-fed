@@ -26,8 +26,8 @@
         </el-form>
       </div>
       <el-row>
-        <el-button type="primary">添加</el-button>
-        <el-button>资源分类</el-button>
+        <el-button type="primary" @click="handleCreate">添加</el-button>
+        <el-button @click="goCategory">资源分类</el-button>
       </el-row>
       <el-table border v-loading="isLoading" :data="resources" style="width: 100%;margin-bottom: 20px;margin-top: 20px;">
         <el-table-column type="index" label="编号" width="100"></el-table-column>
@@ -58,8 +58,8 @@
         :total="total">
       </el-pagination>
     </el-card>
-    <el-dialog title="收货地址" :visible.sync="dialogFormVisible">
-      <resource-create-or-edit :resource-id="resourceId" :is-edit="false" :categories="categories" />
+    <el-dialog :title="isEdit ? '编辑资源' : '创建资源'" :visible.sync="dialogFormVisible">
+      <resource-create-or-edit v-if="dialogFormVisible" @success="onSuccess" :resource-id="resourceId" :is-edit="isEdit" :categories="categories" />
     </el-dialog>
   </div>
 </template>
@@ -67,7 +67,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import ResourceCreateOrEdit from './CreateOrEdit.vue'
-import { getResourcePages } from '@/services/resource'
+import { getResourcePages, deleteResource } from '@/services/resource'
 import { getResourceCategories } from '@/services/resource-category'
 import { Form } from 'element-ui'
 
@@ -90,7 +90,8 @@ export default Vue.extend({
       total: 0,
       isLoading: true,
       dialogFormVisible: false,
-      resourceId: null
+      resourceId: null,
+      isEdit: false
     }
   },
   created () {
@@ -122,13 +123,28 @@ export default Vue.extend({
       this.form.current = 1
       this.loadResources()
     },
+    handleCreate () {
+      this.dialogFormVisible = true
+      this.resourceId = null
+      this.isEdit = false
+    },
     handleEdit (item: any) {
-      console.log('handleEdit--->', item)
       this.dialogFormVisible = true
       this.resourceId = item.id
+      this.isEdit = true
     },
     handleDelete (item: any) {
-      console.log('handleDelete--->', item)
+      this.$confirm('确认删除吗？', '删除提示', {})
+        .then(async () => {
+          const { data } = await deleteResource(item.id)
+          if (data.code === '000000') {
+            this.$message.success('删除成功')
+            this.loadResources()
+          }
+        })
+        .catch(() => {
+          this.$message.info('已取消删除')
+        })
     },
     handleSizeChange (val: number) {
       this.form.size = val
@@ -138,6 +154,15 @@ export default Vue.extend({
     handleCurrentChange (val: number) {
       this.form.current = val
       this.loadResources()
+    },
+    onSuccess () {
+      this.dialogFormVisible = false
+      this.loadResources()
+    },
+    goCategory () {
+      this.$router.push({
+        name: 'resourceCategory'
+      })
     }
   }
 })

@@ -18,11 +18,11 @@
         </el-select>
       </el-form-item>
       <el-form-item label="描述" :label-width="formLabelWidth">
-        <el-input type="textarea" v-model="form.descriptioin" autocomplete="off"></el-input>
+        <el-input type="textarea" v-model="form.description" autocomplete="off"></el-input>
       </el-form-item>
       <el-form-item style="text-align: right">
+        <el-button @click="onCancel">取消</el-button>
         <el-button type="primary" @click="onSubmit">确定</el-button>
-        <el-button v-if="!isEdit">取消</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -30,6 +30,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import { getResourceDetail, saveOrUpdate } from '@/services/resource'
 
 export default Vue.extend({
   name: 'ResourceCreateOrEdit',
@@ -56,12 +57,28 @@ export default Vue.extend({
       formLabelWidth: '120px'
     }
   },
-  created () {
-    console.log('created')
+  async created () {
+    if (this.resourceId) {
+      const { data } = await getResourceDetail(this.resourceId)
+      if (data.code === '000000') {
+        this.form = data.data
+      } else {
+        this.$message.error('资源信息不存在')
+      }
+    }
   },
   methods: {
-    onSubmit () {
-      console.log('onSubmit')
+    async onSubmit () {
+      const { data } = await saveOrUpdate(this.form)
+      if (data.code === '000000') {
+        this.$message.success('操作成功')
+        this.$emit('success')
+      } else {
+        this.$message.error(data.mesg)
+      }
+    },
+    onCancel () {
+      this.$emit('success')
     }
   }
 })
