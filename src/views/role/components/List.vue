@@ -138,7 +138,7 @@ export default Vue.extend({
     allocMenu (item: any) {
       this.$router.push({
         name: 'allocMenu',
-        query: {
+        params: {
           roleId: item.id
         }
       })

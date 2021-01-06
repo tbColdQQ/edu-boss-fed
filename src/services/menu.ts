@@ -57,3 +57,11 @@ export const getRoleMenus = (roleId: string | number) => {
     }
   })
 }
+
+export const allocatedRoleMenus = (data: any) => {
+  return request({
+    method: 'POST',
+    url: '/boss/menu/allocateRoleMenus',
+    data
+  })
+}
