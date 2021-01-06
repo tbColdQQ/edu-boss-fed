@@ -40,3 +40,20 @@ export const getMenuPages = (data: any) => {
     data
   })
 }
+
+export const getMenuNodeList = () => {
+  return request({
+    method: 'GET',
+    url: '/boss/menu/getMenuNodeList'
+  })
+}
+
+export const getRoleMenus = (roleId: string | number) => {
+  return request({
+    method: 'GET',
+    url: '/boss/menu/getRoleMenus',
+    params: {
+      roleId
+    }
+  })
+}

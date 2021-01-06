@@ -29,3 +29,10 @@ export const saveOrUpdate = (data: any) => {
     data
   })
 }
+
+export const getAllRoles = () => {
+  return request({
+    method: 'GET',
+    url: '/boss/role/all'
+  })
+}

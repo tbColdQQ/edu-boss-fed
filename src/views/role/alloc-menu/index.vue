@@ -1,10 +1,12 @@
 <template>
   <el-card class="box-card">
     <el-tree
-      :data="data"
+      :data="menus"
       :props="defaultProps"
       show-checkbox
-      check-on-click-node
+      node-key="id"
+      :default-checked-keys="checkedKeys"
+      default-expand-all
       @check-change="handleCheckChange">
     </el-tree>
   </el-card>
@@ -12,57 +14,50 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import { getMenuNodeList, getRoleMenus } from '@/services/menu'
 
 export default Vue.extend({
   name: 'AllocMenuIndex',
   data () {
     return {
-      data: [{
-        label: '一级 1',
-        children: [{
-          label: '二级 1-1',
-          children: [{
-            label: '三级 1-1-1'
-          }]
-        }]
-      }, {
-        label: '一级 2',
-        children: [{
-          label: '二级 2-1',
-          children: [{
-            label: '三级 2-1-1'
-          }]
-        }, {
-          label: '二级 2-2',
-          children: [{
-            label: '三级 2-2-1'
-          }]
-        }]
-      }, {
-        label: '一级 3',
-        children: [{
-          label: '二级 3-1',
-          children: [{
-            label: '三级 3-1-1'
-          }]
-        }, {
-          label: '二级 3-2',
-          children: [{
-            label: '三级 3-2-1'
-          }]
-        }]
-      }],
+      menus: [],
+      checkedKeys: [],
       defaultProps: {
-        children: 'children',
-        label: 'label'
+        children: 'subMenuList',
+        label: 'name'
       },
       roleId: this.$route.query.roleId
     }
   },
   created () {
     console.log(this.roleId)
+    this.loadMenus()
+    this.loadRoleMenus()
   },
   methods: {
+    async loadMenus () {
+      const { data } = await getMenuNodeList()
+      if (data.code === '000000') {
+        this.menus = data.data
+      }
+    },
+    async loadRoleMenus () {
+      const { data } = await getRoleMenus(this.roleId as any)
+      if (data.code === '000000') {
+        console.log('data--->', data)
+        this.getCheckedKeys(data.data)
+      }
+    },
+    getCheckedKeys (menus: any) {
+      menus.forEach((item: any) => {
+        if (item.selected) {
+          this.checkedKeys.push(item.id as never)
+        }
+        if (item.subMenuList) {
+          this.getCheckedKeys(item.subMenuList)
+        }
+      })
+    },
     handleCheckChange (data: any, checked: boolean, indeterminate: boolean) {
       console.log(data, checked, indeterminate)
     }
