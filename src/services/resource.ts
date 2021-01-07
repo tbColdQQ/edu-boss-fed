@@ -29,3 +29,13 @@ export const deleteResource = (resourceId: string | number) => {
     url: `/boss/resource/${resourceId}`
   })
 }
+
+export const getRoleResources = (roleId: string | number) => {
+  return request({
+    method: 'GET',
+    url: '/boss/resource/getRoleResources',
+    params: {
+      roleId
+    }
+  })
+}

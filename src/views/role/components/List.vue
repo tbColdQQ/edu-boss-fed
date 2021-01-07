@@ -145,7 +145,10 @@ export default Vue.extend({
     },
     allocResource (item: any) {
       this.$router.push({
-        name: 'allocMenu'
+        name: 'allocResource',
+        params: {
+          roleId: item.id
+        }
       })
     },
     onSuccess () {
