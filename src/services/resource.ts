@@ -39,3 +39,11 @@ export const getRoleResources = (roleId: string | number) => {
     }
   })
 }
+
+export const allocateRoleResources = (data: any) => {
+  return request({
+    method: 'POST',
+    url: '/boss/resource/allocateRoleResources',
+    data
+  })
+}

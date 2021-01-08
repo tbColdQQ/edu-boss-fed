@@ -26,14 +26,17 @@
           </el-checkbox-group>
         </el-row>
       </div>
+      <div class="btn-group">
+        <el-button type="primary" style="margin-right: 50px" @click="onSubmit">保存</el-button>
+        <el-button @click="onReset">重置</el-button>
+      </div>
     </el-card>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
-import { getRoleResources } from '@/services/resource'
-const cityOptions: string[] = ['上海', '北京', '广州', '深圳']
+import { getRoleResources, allocateRoleResources } from '@/services/resource'
 export default Vue.extend({
   name: 'AllocResourceIndex',
   props: {
@@ -46,10 +49,7 @@ export default Vue.extend({
     return {
       resources: [],
       checkAllList: [],
-      checkAll: false,
-      checkedCities: ['上海', '北京'],
-      cities: cityOptions,
-      isIndeterminate: true
+      checkAll: false
     }
   },
   created () {
@@ -66,29 +66,72 @@ export default Vue.extend({
             item.checkAll = false
             item.checkedKeys = []
           } else {
-            item.indeterminate = item.resourceList.filter((a: any) => a.selected).length > 0
             item.checkAll = item.resourceList.filter((a: any) => a.selected).length === item.resourceList.length
             item.checkedKeys = item.resourceList.filter((a: any) => a.selected).map((a: any) => {
               return a.id
             })
+            if (item.checkedKeys.length > 0 && item.checkedKeys.length < item.resourceList.length) {
+              item.indeterminate = true
+            } else {
+              item.indeterminate = false
+            }
           }
         })
-        console.log('data.data--->', data.data)
         this.resources = data.data
       } else {
         this.$message.error(data.mesg)
       }
     },
-    handleCheckAllChange (val: string[], index: number) {
-      console.log('handleCheckAllChange--->', val, index)
-      // this.checkedCities = val ? cityOptions : []
-      // this.isIndeterminate = false
+    handleCheckAllChange (val: boolean, index: number) {
+      (this.resources[index] as any).checkedKeys = [] as never
+      (this.resources[index] as any).checkAll = val
+      if ((this.resources[index] as any).resourceList) {
+        (this.resources[index] as any).resourceList.forEach((item: any) => {
+          item.selected = val as never
+          if (val) {
+            (this.resources[index] as any).checkedKeys = [...(this.resources[index] as any).checkedKeys, item.id]
+          }
+        })
+      }
+      (this.resources[index] as any).indeterminate = false
     },
-    handleCheckedResourcesChange (value: string[], index: number) {
-      console.log('handleCheckedResourcesChange--->', value, index)
-      // const checkedCount: number = value.length
-      // this.checkAll = checkedCount === this.cities.length
-      // this.isIndeterminate = checkedCount > 0 && checkedCount < this.cities.length
+    handleCheckedResourcesChange (value: [], index: number) {
+      if (value.length === 0) {
+        (this.resources[index] as any).checkAll = false as never
+        (this.resources[index] as any).indeterminate = false
+      } else {
+        (this.resources[index] as any).indeterminate = true
+        if ((this.resources[index] as any).resourceList.length === value.length) {
+          (this.resources[index] as any).checkAll = true as never
+          (this.resources[index] as any).indeterminate = false
+        }
+      }
+      (this.resources[index] as any).checkedKeys = value
+    },
+    async onSubmit () {
+      let resourceIdList: [] = []
+      this.resources.forEach((resource: any) => {
+        resourceIdList = resourceIdList.concat(resource.checkedKeys) as never
+      })
+      const { data } = await allocateRoleResources({
+        roleId: this.roleId,
+        resourceIdList
+      })
+      if (data.code === '000000') {
+        this.$message.success('操作成功')
+        this.$router.push({
+          name: 'role'
+        })
+      } else {
+        this.$message.error(data.mesg)
+      }
+    },
+    onReset () {
+      this.resources.forEach((resource: any) => {
+        resource.checkedKeys = []
+        resource.checkAll = false
+        resource.inheritAttrs = false
+      })
     }
   }
 })
@@ -110,5 +153,9 @@ export default Vue.extend({
     background: rgba(242, 246, 252, 1);
   }
 }
-
+.btn-group {
+  width: 100%;
+  text-align: center;
+  margin-top: 20px;
+}
 </style>
