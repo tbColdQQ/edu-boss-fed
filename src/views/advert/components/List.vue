@@ -23,7 +23,7 @@
           <el-image
             style="width: 100px; height: 100px"
             :src="scope.row.img"
-            :fit="fit"></el-image>
+            fit="contain"></el-image>
         </template>
       </el-table-column>
       <el-table-column
