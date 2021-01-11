@@ -97,7 +97,7 @@ export default Vue.extend({
     handleEdit (item: any) {
       console.log('handleEdit')
       this.$router.push({
-        name: 'menu-edit',
+        name: 'advert-edit',
         params: {
           id: item.id
         }

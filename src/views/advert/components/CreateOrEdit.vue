@@ -49,10 +49,10 @@
             :http-request="handleUpload">
               <el-button type="primary" size="small">点击上传</el-button>
               <div slot="file" slot-scope="{file}">
-                <img
+                <image
                   class="el-upload-list__item-thumbnail"
                   :src="form.img" alt=""
-                >
+                ></image>
                 <span class="el-upload-list__item-actions">
                   <span
                     class="el-upload-list__item-delete"
@@ -89,12 +89,6 @@ import moment from 'moment'
 
 export default Vue.extend({
   name: 'AdvertCreateOrEdit',
-  props: {
-    isEdit: {
-      type: Boolean,
-      default: false
-    }
-  },
   data () {
     return {
       form: {
@@ -142,10 +136,14 @@ export default Vue.extend({
           }
         ]
       },
-      spaceList: []
+      spaceList: [],
+      isEdit: false
     }
   },
   created () {
+    if (this.$route.params.id) {
+      this.isEdit = true
+    }
     this.loadAdvertInfo()
     this.loadAllSapces()
   },
@@ -168,7 +166,7 @@ export default Vue.extend({
       (this.$refs.form as Form).resetFields()
     },
     handleBeforeUpload (file: any) {
-      const isJPG = file.type === 'img/jpeg'
+      const isJPG = file.type === 'image/jpeg'
       const isLtm = file.size / 1024 / 1024 < 2
       if (!isJPG) {
         this.$message.error('上传的图片只能是 JPG 格式！')
