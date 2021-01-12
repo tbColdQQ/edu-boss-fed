@@ -40,6 +40,7 @@
             v-model="scope.row.status"
             :active-value="1"
             active-color="#40586f"
+            @change="onChange(scope.row)"
             :inactive-value="0">
           </el-switch>
         </template>
@@ -57,7 +58,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { getAdList, getAllSpaces } from '@/services/advert'
+import { getAdList, getAllSpaces, updateStatus } from '@/services/advert'
 
 export default Vue.extend({
   name: 'AdvertList',
@@ -101,6 +102,45 @@ export default Vue.extend({
         params: {
           id: item.id
         }
+      })
+    },
+    onChange (item: any) {
+      console.log('change--->', item)
+      this.$confirm('是否要修改上线/下线状态?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(async () => {
+        const { data } = await updateStatus({
+          id: item.id,
+          status: item.status
+        })
+        if (data.state === 1) {
+          this.$message({
+            type: 'success',
+            message: '状态修改成功!'
+          })
+        } else {
+          if (item.status) {
+            item.status = 0
+          } else {
+            item.status = 1
+          }
+          this.$message({
+            type: 'info',
+            message: data.message
+          })
+        }
+      }).catch(() => {
+        if (item.status) {
+          item.status = 0
+        } else {
+          item.status = 1
+        }
+        this.$message({
+          type: 'info',
+          message: '已取消状态修改'
+        })
       })
     }
   }

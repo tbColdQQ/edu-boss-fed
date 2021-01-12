@@ -42,28 +42,18 @@
         </el-form-item>
         <el-form-item label="广告图片" prop="img">
           <el-upload
+            class="avatar-uploader"
             action="#"
-            :limit="1"
-            list-type="picture-card"
+            :show-file-list="false"
             :before-upload="handleBeforeUpload"
             :http-request="handleUpload">
-              <el-button type="primary" size="small">点击上传</el-button>
-              <div slot="file" slot-scope="{file}">
-                <image
-                  class="el-upload-list__item-thumbnail"
-                  :src="form.img" alt=""
-                ></image>
-                <span class="el-upload-list__item-actions">
-                  <span
-                    class="el-upload-list__item-delete"
-                    @click="handleRemove(file)"
-                  >
-                    <i class="el-icon-delete"></i>
-                  </span>
-                </span>
-              </div>
+              <img v-if="form.img"
+                class="avatar"
+                :src="form.img"
+              />
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
-          <el-tag type="info" style="margin-top: 20px">建议尺寸：230*300px，JPG、PNG格式，图片小于150K</el-tag>
+          <el-tag type="info">建议尺寸：230*300px，JPG、PNG格式，图片小于150K</el-tag>
         </el-form-item>
         <el-form-item label="广告链接" prop="link">
           <el-input v-model="form.link"></el-input>
@@ -207,8 +197,32 @@ export default Vue.extend({
 <style lang="scss" scoped>
 .advert-create {
   text-align: left;
-  .box-card {
-    padding: 0 20% 0 5%;
-  }
 }
+.box-card {
+  padding: 0 20% 0 5%;
+}
+::v-deep .avatar-uploader .el-upload {
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+::v-deep .avatar-uploader .el-upload:hover {
+  border-color: #409EFF;
+}
+.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 178px;
+  height: 178px;
+  line-height: 178px;
+  text-align: center;
+}
+.avatar {
+  width: 178px;
+  height: 178px;
+  display: block;
+}
+
 </style>

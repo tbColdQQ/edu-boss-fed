@@ -31,3 +31,29 @@ export const getAdById = (id: string | number) => {
     }
   })
 }
+
+export const updateStatus = (params: any) => {
+  return request({
+    method: 'GET',
+    url: '/front/ad/updateStatus',
+    params
+  })
+}
+
+export const getSpaceById = (id: string | number) => {
+  return request({
+    method: 'GET',
+    url: '/front/ad/space/getSpaceById',
+    params: {
+      id
+    }
+  })
+}
+
+export const spaceSaveOrUpdate = (data: any) => {
+  return request({
+    method: 'POST',
+    url: '/front/ad/space/saveOrUpdate',
+    data
+  })
+}
