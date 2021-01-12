@@ -36,3 +36,10 @@ export const getAllRoles = () => {
     url: '/boss/role/all'
   })
 }
+
+export const getRolesByUserId = (userId: string | number) => {
+  return request({
+    method: 'GET',
+    url: `/boss/role/user/${userId}`
+  })
+}

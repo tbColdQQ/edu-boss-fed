@@ -48,3 +48,11 @@ export const forbidUser = (userId: string | number) => {
     }
   })
 }
+
+export const allocUserRoles = (data: any) => {
+  return request({
+    method: 'POST',
+    url: '/boss/role/allocateUserRoles',
+    data
+  })
+}
