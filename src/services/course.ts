@@ -34,10 +34,11 @@ export const changeState = (params: any) => {
   })
 }
 
-export const uploadImg = (data: any) => {
+export const uploadImg = (data: any, onUploadProgress?: (progressEvent: ProgressEvent) => void) => {
   return request({
     method: 'POST',
     url: '/boss/course/upload',
-    data
+    data,
+    onUploadProgress
   })
 }

@@ -2,7 +2,7 @@
   <div class="course-edit">
     <el-page-header @back="goBack" :content="isEdit ? '编辑课程' : '新增课程'">
     </el-page-header>
-    <el-card>
+    <el-card style="margin-top: 10px">
       <div slot="header" class="clearfix">
         <el-steps :active="activeStep" simple>
           <el-step
@@ -38,41 +38,25 @@
         </div>
         <div v-show="activeStep === 1">
           <el-form-item label="课程封面">
-            <el-upload
-              class="avatar-uploader"
-              action="https://jsonplaceholder.typicode.com/posts/"
-              :show-file-list="false"
-              :on-success="handleAvatarSuccess"
-              :before-upload="beforeAvatarUpload">
-              <img v-if="imageUrl" :src="imageUrl" class="avatar">
-              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-            </el-upload>
+            <course-image v-model="course.courseListImg" />
           </el-form-item>
-          <el-form-item label="解锁封面">
-            <el-upload
-              class="avatar-uploader"
-              action="https://jsonplaceholder.typicode.com/posts/"
-              :show-file-list="false"
-              :on-success="handleAvatarSuccess"
-              :before-upload="beforeAvatarUpload">
-              <img v-if="imageUrl" :src="imageUrl" class="avatar">
-              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-            </el-upload>
+          <el-form-item label="介绍封面">
+            <course-image v-model="course.courseImgUrl" />
           </el-form-item>
         </div>
         <div v-show="activeStep === 2">
           <el-form-item label="售卖价格">
-            <el-input placeholder="" v-model="course.discounts">
+            <el-input type="number" placeholder="" v-model="course.discounts">
               <template slot="append">元</template>
             </el-input>
           </el-form-item>
           <el-form-item label="商品原价">
-            <el-input placeholder="" v-model="course.price">
+            <el-input type="number" placeholder="" v-model="course.price">
               <template slot="append">元</template>
             </el-input>
           </el-form-item>
-          <el-form-item label="销量" v-model="course.sales">
-            <el-input placeholder="">
+          <el-form-item label="销量">
+            <el-input type="number" placeholder="" v-model="course.sales">
               <template slot="append">单</template>
             </el-input>
           </el-form-item>
@@ -90,32 +74,34 @@
         <div v-show="activeStep === 3">
           <el-form-item label="现时秒杀开关" label-width="100px">
             <el-switch
-              v-model="isSeckill"
+              v-model="course.activityCourse"
               active-color="#13ce66"
               inactive-color="#ff4949"></el-switch>
           </el-form-item>
-          <template v-if="isSeckill">
+          <template v-if="course.activityCourse">
             <el-form-item label="开始时间" label-width="100px">
               <el-date-picker
-                v-model="course.beginTime"
-                type="datetime"
+                v-model="course.activityCourseDTO.beginTime"
+                type="date"
+                value-format="yyyy-MM-dd"
                 placeholder="">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="结束时间" label-width="100px">
               <el-date-picker
-                v-model="course.endTime"
-                type="datetime"
+                v-model="course.activityCourseDTO.endTime"
+                type="date"
+                value-format="yyyy-MM-dd"
                 placeholder="">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="秒杀价" label-width="100px">
-              <el-input placeholder="" v-model="course.amount">
+              <el-input type="number" placeholder="" v-model="course.activityCourseDTO.amount">
                 <template slot="append">元</template>
               </el-input>
             </el-form-item>
             <el-form-item label="秒杀库存" label-width="100px">
-              <el-input placeholder="" v-model="course.stock">
+              <el-input type="number" placeholder="" v-model="course.activityCourseDTO.stock">
                 <template slot="append">个</template>
               </el-input>
             </el-form-item>
@@ -123,10 +109,19 @@
         </div>
         <div v-show="activeStep === 4">
           <el-form-item label="课程详情">
-            <el-input type="textarea" v-model="course.courseDescriptionMarkDown" placeholder=""></el-input>
+            <text-editor v-model="course.courseDescriptionMarkDown" />
+          </el-form-item>
+          <el-form-item label="是否发布">
+            <el-switch
+              v-model="course.status"
+              :active-value="1"
+              :inactive-value="0"
+              active-color="#13ce66"
+              inactive-color="#ff4949"
+            />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary">保存</el-button>
+            <el-button type="primary" @click="handleSave">保存</el-button>
           </el-form-item>
         </div>
         <el-form-item v-if="activeStep >= 0 && activeStep < 4">
@@ -140,10 +135,16 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { saveOrUpdate, getCourseById, uploadImg } from '@/services/course'
+import { saveOrUpdate, getCourseById } from '@/services/course'
+import CourseImage from './CourseImage.vue'
+import TextEditor from '@/components/TextEditor/index.vue'
 
 export default Vue.extend({
   name: 'CourseCreateOrEdit',
+  components: {
+    CourseImage,
+    TextEditor
+  },
   data () {
     return {
       isEdit: false,
@@ -173,12 +174,9 @@ export default Vue.extend({
         }
       ],
       course: {
-        id: 0,
         courseName: '',
         brief: '',
         teacherDTO: {
-          id: 0,
-          courseId: 0,
           teacherName: '',
           teacherHeadPicUrl: '',
           position: '',
@@ -200,8 +198,6 @@ export default Vue.extend({
         sales: 0,
         activityCourse: true,
         activityCourseDTO: {
-          id: 0,
-          courseId: 0,
           beginTime: '',
           endTime: '',
           amount: 0,
@@ -214,26 +210,35 @@ export default Vue.extend({
   created () {
     if (this.$route.params.id) {
       this.isEdit = true
+      this.getCourseDetail()
     }
   },
   methods: {
+    async getCourseDetail () {
+      const { data } = await getCourseById(this.$route.params.id)
+      if (data.code === '000000') {
+        if (!data.data.activityCourseDTO) {
+          data.data.activityCourseDTO = {
+            beginTime: '',
+            endTime: '',
+            amount: 0,
+            stock: 0
+          }
+        }
+        this.course = data.data
+      }
+    },
     goBack () {
       this.$router.back()
     },
-    handleAvatarSuccess (res: any, file: any) {
-      this.imageUrl = URL.createObjectURL(file.raw)
-    },
-    beforeAvatarUpload (file: any) {
-      const isJPG = file.type === 'image/jpeg'
-      const isLt2M = file.size / 1024 / 1024 < 2
-
-      if (!isJPG) {
-        this.$message.error('上传头像图片只能是 JPG 格式!')
+    async handleSave () {
+      const { data } = await saveOrUpdate(this.course)
+      if (data.code === '000000') {
+        this.$message.success('操作成功')
+        this.$router.back()
+      } else {
+        this.$message.error(data.mesg)
       }
-      if (!isLt2M) {
-        this.$message.error('上传头像图片大小不能超过 2MB!')
-      }
-      return isJPG && isLt2M
     }
   }
 })
@@ -245,28 +250,5 @@ export default Vue.extend({
 }
 .el-step {
   cursor: pointer;
-}
-::v-deep .avatar-uploader .el-upload {
-  border: 1px dashed #d9d9d9;
-  border-radius: 6px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-}
-::v-deep .avatar-uploader .el-upload:hover {
-  border-color: #409EFF;
-}
-.avatar-uploader-icon {
-  font-size: 28px;
-  color: #8c939d;
-  width: 178px;
-  height: 178px;
-  line-height: 178px;
-  text-align: center;
-}
-.avatar {
-  width: 178px;
-  height: 178px;
-  display: block;
 }
 </style>
