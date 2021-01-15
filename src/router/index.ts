@@ -80,6 +80,12 @@ const routes: Array<RouteConfig> = [
         component: () => import(/* webpackChunkName: 'course-section' */ '@/views/course/section.vue')
       },
       {
+        path: '/course/:courseId/video',
+        name: 'course-video',
+        props: true,
+        component: () => import(/* webpackChunkName: 'course-video' */ '@/views/course/video.vue')
+      },
+      {
         path: '/menu',
         name: 'menu',
         component: () => import(/* webpackChunkName: 'menu' */ '@/views/menu/index.vue')

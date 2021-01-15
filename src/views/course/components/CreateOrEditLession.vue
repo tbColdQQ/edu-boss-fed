@@ -5,7 +5,7 @@
         <el-input v-model="lession.courseName" disabled></el-input>
       </el-form-item>
       <el-form-item label="章节名称" prop="sectionName">
-        <el-input v-model="lession.sectionName" disabled></el-input>
+        <el-input v-model="sectionName" disabled></el-input>
       </el-form-item>
       <el-form-item label="课时名称" prop="theme">
         <el-input v-model="lession.theme"></el-input>

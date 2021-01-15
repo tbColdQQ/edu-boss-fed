@@ -25,8 +25,23 @@
         </span>
         <span class="actions" v-else>
           <el-button type="default" @click="() => handleEditLession(data)">编辑</el-button>
-          <el-button type="success">上传视频</el-button>
-          <el-button type="default">状态</el-button>
+          <el-button type="success" @click="$router.push({
+            name: 'course-video',
+            params: {
+              courseId
+            },
+            query: {
+              sectionId: node.parent.id,
+              lessonId: data.id,
+              courseName: course.courseName,
+              theme: data.theme
+            }
+          })">上传视频</el-button>
+          <el-select v-model="data.status" @change="() => handleLessionChangeStatus(data)" style="width: 90px;margin-left: 10px">
+            <el-option label="已隐藏" :value="0"></el-option>
+            <el-option label="待更新" :value="1"></el-option>
+            <el-option label="已更新" :value="2"></el-option>
+          </el-select>
         </span>
       </div>
     </el-tree>
@@ -34,7 +49,15 @@
       <create-or-edit-section v-if="dialogFormVisible" :section-id="sectionId" @success="onSuccess" :course-id="courseId" :is-edit="isEdit" :course-name="course.courseName" />
     </el-dialog>
     <el-dialog :title="isLessionEdit ? '编辑课时' : '新建课时'" :visible.sync="lessionVisible">
-      <create-or-edit-lession v-if="lessionVisible" :section-id="sectionId" @success="onSuccess" :course-id="courseId" :is-edit="isLessionEdit" :section-name="sectionName" :course-name="course.courseName" :lession-id="lessionId" />
+      <create-or-edit-lession
+        v-if="lessionVisible"
+        :section-id="sectionId"
+        @success="onSuccess"
+        :course-id="courseId"
+        :is-edit="isLessionEdit"
+        :section-name="sectionName"
+        :course-name="course.courseName"
+        :lession-id="lessionId" />
     </el-dialog>
   </div>
 </template>
@@ -108,7 +131,7 @@ export default Vue.extend({
     async handleSort (dragNode: any, dropNode: any, type: any, event: any) {
       try {
         await Promise.all(dropNode.parent.childNodes.map((item: any, index: number) => {
-          if (dragNode.data.lessonDTOS) {
+          if (Object.keys(dragNode.data).indexOf('lessonDTOS') >= 0) {
             return saveOrUpdateSection({
               id: item.data.id,
               orderNum: index + 1
@@ -154,10 +177,23 @@ export default Vue.extend({
       }
       this.loadSections()
     },
+    async handleLessionChangeStatus (item: any) {
+      const { data } = await saveOrUpdateLession({
+        id: item.id,
+        status: item.status
+      })
+      if (data.code === '000000') {
+        this.$message.success('状态修改成功')
+      } else {
+        this.$message.error('状态修改失败')
+      }
+      this.loadSections()
+    },
     handleCreateLession (section: any) {
       this.sectionId = section.id
       this.lessionVisible = true
       this.isLessionEdit = false
+      this.sectionName = section.sectionName
     },
     handleEditLession (lession: any) {
       this.sectionId = lession.sectionId
