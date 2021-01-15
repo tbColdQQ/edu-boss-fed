@@ -144,6 +144,14 @@ export default Vue.extend({
           id: item.id
         }
       })
+    },
+    handleManagerContent (item: any) {
+      this.$router.push({
+        name: 'course-section',
+        params: {
+          courseId: item.id
+        }
+      })
     }
   }
 })
