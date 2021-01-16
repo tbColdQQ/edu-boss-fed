@@ -5,8 +5,17 @@
       class="el-menu-vertical-demo"
       @open="handleOpen"
       @close="handleClose"
+      :collapse="isCollapse"
+      collapse-transition
+      mode="vertical"
       router
     >
+      <div class="logo" @click="$router.push({
+        name: 'home'
+      })">
+        <img src="../../assets/logo.png"  class="logo-img"/>
+        <div v-if="!isCollapse" class="logo-text">Edu Boss</div>
+      </div>
       <el-submenu index="1">
         <template slot="title">
           <i class="el-icon-lock"></i>
@@ -56,6 +65,11 @@ import Vue from 'vue'
 
 export default Vue.extend({
   name: 'AppAside',
+  computed: {
+    isCollapse () {
+      return this.$store.state.isCollapse
+    }
+  },
   methods: {
     handleOpen (key: string, keyPath: string): void {
       console.log(key, keyPath)
@@ -75,5 +89,26 @@ export default Vue.extend({
 }
 .el-submenu, .el-menu-item {
   text-align: left;
+}
+.logo {
+  height: 50px;
+  background: #f8f9fb;
+  cursor: pointer;
+}
+.logo-img {
+  margin-top: 10px;
+  display: inline-block;
+  width: 30px;
+  vertical-align: middle;
+}
+.logo-text {
+  display: inline-block;
+  text-align: left;
+  font-size: 20px;
+  font-family: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+  font-weight: 700;
+  vertical-align: middle;
+  margin-top: 10px;
+  margin-left: 10px;
 }
 </style>

@@ -1,11 +1,21 @@
 <template>
   <div class="header">
-    <el-breadcrumb separator="/">
-      <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-      <el-breadcrumb-item><a href='/'>活动管理</a></el-breadcrumb-item>
-      <el-breadcrumb-item>活动列表</el-breadcrumb-item>
-      <el-breadcrumb-item>活动详情</el-breadcrumb-item>
-    </el-breadcrumb>
+    <div style="display: flex; align-items: center">
+      <i
+        @click="changeCollapse"
+        :class="$store.state.isCollapse ? 'el-icon-s-unfold' : 'el-icon-s-fold'"
+        style="font-size: 20px;cursor: pointer"
+      ></i>
+      <el-breadcrumb separator="/" style="margin-left: 10px">
+        <el-breadcrumb-item
+          :key="index"
+          v-for="(item, index) in breadcrumbs"
+        >
+          <a v-if="item.level === 1" :href='item.path'>{{item.name}}</a>
+          <span v-else>{{item.name}}</span>
+        </el-breadcrumb-item>
+      </el-breadcrumb>
+    </div>
     <el-dropdown>
       <el-avatar :size="30" :src="userInfo.portrait" @error="errorHandler" style="border-radius: 50%;text-align: center;">
         <img src="../../assets/default-avatar.png"/>
@@ -27,6 +37,11 @@ export default Vue.extend({
   data () {
     return {
       userInfo: {}
+    }
+  },
+  computed: {
+    breadcrumbs () {
+      return this.$store.state.breadcrumbs
     }
   },
   created () {
@@ -60,6 +75,9 @@ export default Vue.extend({
           message: '已取消退出'
         })
       })
+    },
+    changeCollapse () {
+      this.$store.commit('changeCollapse', !this.$store.state.isCollapse)
     }
   }
 })
